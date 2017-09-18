@@ -1,0 +1,119 @@
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+  <script src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+  <script src="/node_modules/vue-touch/dist/vue-touch.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('serviceWorker.js', {
+        scope: './'
+      })
+      .then(function() {
+          console.log('Service working now interfering with network traffic');
+      }, function(err) {
+        console.log('No service worker here, we\'re on our own :(', err);
+      });
+    }
+
+    // window.onload = function () {
+    //   console.log('hello', document.getElementById('the-list'));
+    //   var hammertime = new Hammer(document.getElementById('the-list'));
+    //     hammertime.on('swipe', function(ev) {
+    //     	console.log(ev);
+    //     });
+    // };
+  </script>
+  <style>
+    .done {
+      text-decoration: line-through;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <v-touch v-on:swipe="remove('blah')"><h1>The ultimate handlingslista</h1></v-touch>
+  <div id="the-list">
+    <ul>
+      <v-touch
+        tag="li"
+        v-for="item in list"
+        v-bind:key="item.id"
+        v-bind:class="{ done: item.done }"
+        v-on:tap="done(item.id)"
+        v-on:swipe="remove(item.id)">
+      <!-- <v-touch
+        tag="li"
+        v-for="item in list"
+        v-bind:key="item.id"
+        v-bind:class="{ done: item.done }"
+        v-on:swipeleft="remove"
+        > -->
+        <!-- v-on:tap="touch(item.id)" -->
+        {{ item.id }} - {{ item.text }}
+      </v-touch>
+    </ul>
+    <input v-model="newItem.text" />
+    <button v-on:click="add">Add</button>
+
+  </div>
+  <script>
+    // console.log(vueTouch);
+    // Vue.use(VueTouch);
+    var listApp = new Vue({
+      el: '#the-list',
+      created: function() {
+        this.init();
+      },
+      methods: {
+        init: function() {
+          this.loadData();
+        },
+        loadData: function() {
+          this.$http.get('http://localhost:3000/todos').then(function(response) {
+            if (!!response.body) {
+              this.list = response.body;
+            }
+          }, function (err) {
+            console.log('err', err);
+            alert('Cant get todos ' + err);
+          });
+        },
+        add: function () {
+          var item = {text: this.newItem.text};
+
+          this.list.push(item);
+          this.newItem = {};
+
+          this.$http.post('http://localhost:3000/todos', { text: item.text }).then(function (response) {
+
+            this.loadData();
+          }, function (err) {
+            console.log('err', err);
+            alert('Cant save new item ' + err);
+          });
+        },
+        done: function(id) {
+          var item = this.list.find(function(item) {
+              return item.id == id;
+          });
+          item.done = !item.done;
+        },
+        remove: function(id) {
+          console.log('remove', id);
+          // console.log('id', id);
+          // var item = this.list.find((item)=>{
+          //   return item.id == id;
+          // });
+          // this.list.splice(this.list.findIndex(item => item.id == id));
+        }
+      },
+      data: {
+        newItem: {},
+        list: []
+      }
+    });
+  </script>
+</body>
+</html>

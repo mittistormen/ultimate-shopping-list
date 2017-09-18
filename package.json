@@ -1,0 +1,16 @@
+{
+  "name": "family-shopping-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Johanna Månsson Grahn",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "~1.18.1",
+    "express": "~4.15.4",
+    "vue-touch": "~2.0.0-beta.4"
+  }
+}
