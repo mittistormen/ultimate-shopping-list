@@ -1,0 +1,14 @@
+.done {
+  text-decoration: line-through;
+  color: gray;
+}
+header img {
+  width:1em;
+  height:1em;
+  float:left;
+  margin:10px;
+}
+header h1 {
+  font-size: 1em;
+  padding:10px;
+}

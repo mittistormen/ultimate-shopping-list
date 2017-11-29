@@ -1,0 +1,102 @@
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4"></script>
+  <script src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+  <script src="/node_modules/vue-touch/dist/vue-touch.js"></script>
+  <script src="https://apis.google.com/js/api.js"></script>
+  <link rel="stylesheet" type="text/css" href="/www/default.css">
+</head>
+<body>
+  <header>
+    <img src="/www/idea.png"/><h1>What's up this week</h1>
+  </header>
+  <div id="the-events">
+    <button v-on:click="signIn()">Add baby calendar</button>
+    <ul>
+      <li v-for="event in events">
+        {{ event.id }} - {{ event.text }}
+      </li>
+    </ul>
+  </div>
+  <script>
+    var listApp = new Vue({
+      el: '#the-events',
+      created: function() {
+        this.init();
+      },
+      methods: {
+        init: function() {
+          var key = this.api.key;
+          var clientId = this.api.clientId;
+          var discoveryDocs = this.api.discoveryDocs;
+          var apiScope = this.api.scope;
+
+          var updateStatus = this.updateSigninStatus;
+
+          gapi.load('client:auth2', function() {
+            gapi.client.init({
+              apiKey: key,
+              'client_id': clientId,
+              discoveryDocs: discoveryDocs,
+              scope: apiScope
+            }).then(function (args) {
+              console.log('args', args);
+              // Listen for sign-in state changes.
+              gapi.auth2.getAuthInstance().isSignedIn.listen(updateStatus);
+              //
+              // Handle the initial sign-in state.
+              updateStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+            }, function (error) {
+              console.log('error', error);
+            });
+          });
+        },
+        signIn: function() {
+          console.log('signin');
+          gapi.auth2.getAuthInstance().signIn();
+        },
+        signOut: function() {
+          gapi.auth2.getAuthInstance().signOut();
+        },
+        updateSigninStatus: function(isSignedIn) {
+          this.api.signedIn = isSignedIn;
+          if (isSignedIn) {
+            this.listUpcomingEvents();
+          }
+        },
+        listUpcomingEvents: function() {
+          console.log('list events');
+          gapi.client.calendar.events.list({
+              'calendarId': 'primary',
+              'timeMin': (new Date()).toISOString(),
+              'showDeleted': false,
+              'singleEvents': true,
+              'maxResults': 10,
+              'orderBy': 'startTime'
+            }).then(function(response) {
+              this.events = response.result.items;
+            });
+        },
+        add: function () {
+          var item = {text: this.newItem.text};
+
+          this.list.push(item);
+        },
+      },
+      data: {
+        api: {
+          key: '',
+          clientId: '',
+          discoveryDocs: [''],
+          scope: '',
+          signedIn: false
+        },
+        newItem: {},
+        events: []
+      }
+    });
+  </script>
+</body>
+</html>

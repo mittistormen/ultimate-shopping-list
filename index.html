@@ -25,15 +25,22 @@
     //     });
     // };
   </script>
-  <style>
-    .done {
-      text-decoration: line-through;
-      color: gray;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="www/default.css">
 </head>
 <body>
-  <v-touch v-on:swipe="remove('blah')"><h1>The ultimate handlingslista</h1></v-touch>
+  <header>
+    At Your Service - Parent Express Delivery
+  </header>
+  What's up this week
+  <button v-on:click="authorizeCalendar">Add baby calendar</button>
+  <div id="the-events">
+    <ul>
+        {{ event.id }} - {{ event.text }}
+    </ul>
+  </div>
+  <header>
+    <img src="/www/idea.png"/><h1>The ultimate handlingslista</h1>
+  </header>
   <div id="the-list">
     <ul>
       <v-touch
@@ -56,7 +63,6 @@
     </ul>
     <input v-model="newItem.text" />
     <button v-on:click="add">Add</button>
-
   </div>
   <script>
     // console.log(vueTouch);

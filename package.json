@@ -11,6 +11,8 @@
   "dependencies": {
     "body-parser": "~1.18.1",
     "express": "~4.15.4",
+    "google-auth-library": "~0.12.0",
+    "googleapis": "~23.0.0",
     "vue-touch": "~2.0.0-beta.4"
   }
 }
